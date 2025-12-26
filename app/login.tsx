@@ -19,7 +19,12 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
-    const userEmail = email.trim();
+    let userEmail = email.trim();
+    
+    // Si no tiene @, agregar @example.com para formato válido
+    if (!userEmail.includes('@')) {
+      userEmail = `${userEmail}@example.com`;
+    }
 
     try {
       if (mode === 'login') {
@@ -50,6 +55,11 @@ export default function LoginScreen() {
   return (
     <ThemedView style={styles.container}>
       <Text style={styles.title}>{mode === 'login' ? 'Iniciar sesión' : 'Registrar usuario'}</Text>
+      <Text style={styles.hint}>
+        {mode === 'login' 
+          ? 'Usa: admin@example.com / admin123' 
+          : 'Ingresa un email válido (ej: tu@email.com)'}
+      </Text>
       <TextInput
         placeholder="Email"
         placeholderTextColor="#ddd"
@@ -95,5 +105,6 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: 'center' },
   title: { fontSize: 20, marginBottom: 12, textAlign: 'center', color: '#fff' },
+  hint: { fontSize: 12, marginBottom: 16, textAlign: 'center', color: '#aaa', fontStyle: 'italic' },
   input: { borderWidth: 1, borderColor: '#444', padding: 8, marginBottom: 12, borderRadius: 6, color: '#fff' },
 });

@@ -134,15 +134,15 @@ class ApiClient {
   async login(email: string, password: string): Promise<AuthResponse> {
     let lastError: any = null;
     
-    // Reintentar hasta 5 veces con timeout de 5s
-    for (let attempt = 1; attempt <= 5; attempt++) {
+    // Reintentar hasta 3 veces solo en errores de red
+    for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const response = await axios.post(
           `${API_URL}/auth/login`,
           { email, password },
           {
             headers: await this.getHeaders(false),
-            timeout: 5000,
+            timeout: 10000,
           }
         );
         
@@ -152,10 +152,16 @@ class ApiClient {
           await this.setToken(data.token);
         }
         return data;
-      } catch (error) {
+      } catch (error: any) {
         lastError = error;
         
-        if (attempt < 5) {
+        // Si es un error 400 o 401, no reintentar (credenciales incorrectas)
+        if (error.response && (error.response.status === 400 || error.response.status === 401)) {
+          throw error;
+        }
+        
+        // Solo reintentar en errores de red
+        if (attempt < 3) {
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
@@ -213,6 +219,9 @@ class ApiClient {
   async createTodo(data: {
     title: string;
     image?: string;
+    imageUrl?: string;
+    url?: string;
+    photo?: string;
     location?: { latitude: number; longitude: number };
   }): Promise<Todo> {
     try {
@@ -236,6 +245,9 @@ class ApiClient {
       title: string;
       completed: boolean;
       image?: string;
+      imageUrl?: string;
+      url?: string;
+      photo?: string;
       location?: { latitude: number; longitude: number };
     }>
   ): Promise<Todo> {

@@ -2,6 +2,25 @@
 
 Aplicación móvil con autenticación JWT, CRUD de tareas, gestión de imágenes y ubicación geográfica.
 
+## Información del Proyecto
+
+**Autor:** Ervin Pinto Madariaga  
+**Tipo:** Proyecto individual (Eva2 - Desarrollo de Aplicaciones Móviles)  
+**Repositorio:** https://github.com/Ervin-PM/EVA2DA.git  
+**Fecha:** Diciembre 2025
+
+### Uso de Inteligencia Artificial
+
+Este proyecto fue desarrollado con el apoyo de **GitHub Copilot** como asistente de IA, utilizado para:
+
+- **Generación de código boilerplate:** Estructura inicial de componentes React Native y TypeScript
+- **Refactorización:** Migración de lógica de negocio a custom hooks siguiendo mejores prácticas
+- **Depuración:** Identificación y solución de errores en peticiones HTTP y manejo de estados
+- **Documentación:** Generación de comentarios y documentación técnica
+- **Optimización:** Implementación de manejo de imágenes con compresión y reintentos en peticiones de red
+
+**Nota importante:** Toda la arquitectura, decisiones de diseño y lógica de negocio fueron definidas por el desarrollador. La IA se utilizó como herramienta de productividad para acelerar la implementación de patrones establecidos y solución de problemas técnicos específicos.
+
 ## Características
 
 - ✅ Autenticación JWT con backend REST
@@ -29,16 +48,38 @@ POST   /images         - Subir imagen
 
 ```
 app/
-  login.tsx           - Login/Registro
+  login.tsx           - Login/Registro con autenticación JWT
   (tabs)/
-    index.tsx         - Home
-    todos.tsx         - Lista CRUD
+    index.tsx         - Pantalla principal/Home
+    todos.tsx         - Lista de tareas con CRUD completo
 utils/
-  api.ts              - Cliente API
-  tasks.ts            - Lógica de negocio
+  api.ts              - Cliente API con axios y manejo de tokens
+  tasks.ts            - Funciones de negocio para tareas
+hooks/
+  useTodos.ts         - Custom hook con lógica CRUD encapsulada
+  use-color-scheme.ts - Hook para manejo de tema
+  use-theme-color.ts  - Hook para colores del tema
 components/
-  themed-view.tsx     - Gradiente global
+  themed-view.tsx     - Componente con gradiente global
 ```
+
+### Encapsulación con Custom Hooks
+
+El proyecto implementa el patrón de **Custom Hooks** para separar la lógica de negocio de la presentación:
+
+**`hooks/useTodos.ts`** - Encapsula toda la lógica del CRUD de tareas:
+- ✅ Gestión de estado (tareas, loading, errores)
+- ✅ Obtener tareas del backend
+- ✅ Crear tareas con imágenes y ubicación
+- ✅ Eliminar tareas
+- ✅ Cambiar estado de completado
+- ✅ Manejo de autenticación y navegación
+
+Este patrón permite:
+- **Reutilización:** El hook puede usarse en múltiples componentes
+- **Testabilidad:** La lógica se puede probar de forma aislada
+- **Mantenibilidad:** Separación clara entre UI y lógica de negocio
+- **Legibilidad:** Componentes más limpios enfocados en la presentación
 
 ## Instalación y Ejecución
 
@@ -75,29 +116,38 @@ EXPO_PUBLIC_API_URL=https://todo-list.dobleb.cl
 
 ## Requisitos Funcionales 
 
-**Login :**
-- Envía credenciales al backend.
-- Guarda el token en AsyncStorage para mantener sesión.
-- Bloquea rutas protegidas si el token no existe o es inválido.
-- Maneja errores de la API (credenciales incorrectas/usuario inexistente).
+**Autenticación (login/registro):**
+- ✅ Pantalla en `app/login.tsx` con envío de credenciales al backend (`POST /auth/login`/`/auth/register`)
+- ✅ Token JWT persistido en AsyncStorage y usado en todos los requests vía `utils/api.ts`
+- ✅ Protección de rutas mediante verificación de sesión y redirección a login si no hay token
+- ✅ Manejo de errores de la API (401, 403, 500)
 
-**Tareas:**
-- Listar: GET desde backend (solo tareas del usuario autenticado).
-- Crear: Enviar título, imagen y ubicación al backend.
-- Marcar completada/no completada: Actualizar en backend vía PATCH/PUT.
-- Eliminar: Borrar en backend vía DELETE.
+**Lista de tareas (CRUD 100% Backend):**
+- ✅ Vista principal en `app/(tabs)/todos.tsx` usa el custom hook `useTodos`
+- ✅ **Listado:** `GET /todos` del usuario autenticado (sin persistencia local)
+- ✅ **Crear:** Título, imagen (subida a través de `POST /images`) y ubicación; luego `POST /todos` con la URL devuelta
+- ✅ **Actualizar:** `PATCH /todos/{id}` actualiza estado de completado en backend
+- ✅ **Eliminar:** `DELETE /todos/{id}` borra la tarea en backend
+- ✅ **Restricción:** Tareas asociadas al usuario autenticado, API limita lista a ese usuario
+- ✅ **Sin persistencia local:** Toda la data proviene del backend, no se usa AsyncStorage para tareas ni imágenes
 
-**Restricción obligatoria:**
-- Las tareas deben estar asociadas al usuario autenticado.
-- La API debe limitar la lista a ese usuario.
+**Manejo de imágenes (obligatorio):**
+- ✅ Captura/selección con `expo-image-picker` (API nativa del dispositivo)
+- ✅ Optimización automática (compresión y redimensionamiento a <5MB)
+- ✅ Envío al servidor con multipart/form-data (`POST /images`)
+- ✅ Backend retorna URL; la app muestra esa URL en la lista
+- ✅ Manejo de permisos de cámara y galería
 
-**Manejo de imágenes (opcional):**
-- Captura desde dispositivo.
-- Envío al servidor con multipart/form-data o base64 (según backend).
-- Backend retorna URL; la app muestra esa URL en la lista.
+**Custom Hooks (obligatorio):**
+- ✅ Lógica CRUD encapsulada en `hooks/useTodos.ts`
+- ✅ Componentes enfocados en presentación, sin lógica de negocio
+- ✅ Manejo centralizado de `loading`, `error` y estados
 
 **Variables de entorno:**
-- Configurar la URL base del backend en `.env.local`:
+- ✅ Configurar la URL base del backend en `.env.local`:
+  ```env
+  EXPO_PUBLIC_API_URL=https://todo-list.dobleb.cl
+  ```
   
   ```env
   EXPO_PUBLIC_API_URL=https://todo-list.dobleb.cl
@@ -106,24 +156,31 @@ EXPO_PUBLIC_API_URL=https://todo-list.dobleb.cl
 ## Implementación
 
 - **Autenticación (login/registro):**
-  - Pantalla en `app/login.tsx` con envío de credenciales al backend (`POST /auth/login`/`/auth/register`).
-  - Token JWT persistido en AsyncStorage y usado en todos los requests vía `utils/api.ts`.
-  - Protección de rutas mediante verificación de sesión en el layout y redirección a login si no hay token.
+  - Pantalla en `app/login.tsx` con envío de credenciales al backend (`POST /auth/login`/`/auth/register`)
+  - Token JWT persistido en AsyncStorage y usado en todos los requests vía `utils/api.ts`
+  - Protección de rutas mediante verificación de sesión en el custom hook y redirección a login si no hay token
 
 - **Lista de tareas (CRUD):**
-  - Vista principal en `app/(tabs)/todos.tsx` consume `utils/tasks.ts`.
-  - Listado: `GET /todos` del usuario autenticado.
-  - Crear: título, imagen (subida a través de `POST /images`) y ubicación; luego `POST /todos` con la URL devuelta.
-  - Completar/no completar: `PATCH /todos/{id}` actualiza estado en backend.
-  - Eliminar: `DELETE /todos/{id}` borra la tarea en backend.
+  - Vista principal en `app/(tabs)/todos.tsx` consume el custom hook `useTodos`
+  - **Custom Hook `useTodos`:** Encapsula toda la lógica de negocio
+    - Estado: `tasks`, `loading`, `error`, `user`
+    - Métodos: `refresh()`, `createTask()`, `deleteTask()`, `toggleTaskComplete()`
+    - Manejo automático de autenticación y errores
+  - Listado: `GET /todos` del usuario autenticado (100% desde backend)
+  - Crear: Título, imagen (subida a través de `POST /images`) y ubicación; luego `POST /todos` con la URL devuelta
+  - Completar/no completar: `PATCH /todos/{id}` actualiza estado en backend
+  - Eliminar: `DELETE /todos/{id}` borra la tarea en backend
+  - **Sin persistencia local:** Toda la data de tareas e imágenes proviene exclusivamente del backend
 
 - **Imágenes y ubicación:**
-  - Captura/selección con `expo-image-picker`; subida como multipart/form-data.
-  - Ubicación obtenida con `expo-location` y adjunta al crear la tarea.
+  - Captura/selección con `expo-image-picker` (API nativa)
+  - Optimización automática con `expo-image-manipulator` (compresión y redimensionamiento)
+  - Subida como multipart/form-data con manejo de errores (413, timeout, etc.)
+  - Ubicación obtenida con `expo-location` y adjunta al crear la tarea
 
 - **Proxy y cuenta demo:**
-  - Proxy HTTP→HTTPS para evitar CORS/mixed content en Android durante pruebas.
-  - Cuenta de pruebas: Usuario `admin`, Contraseña `admin123` para validar flujos rápidamente.
+  - Proxy HTTP→HTTPS para evitar CORS/mixed content en Android durante pruebas
+  - Cuenta de pruebas: Usuario `admin`, Contraseña `admin123` para validar flujos rápidamente
 
 ## Tecnologías
 
