@@ -5,7 +5,7 @@ Aplicación móvil con autenticación JWT, CRUD de tareas, gestión de imágenes
 ## Información del Proyecto
 
 **Autor:** Ervin Pinto Madariaga  
-**Tipo:** Proyecto individual (Eva2 - Desarrollo de Aplicaciones Móviles)  
+**Tipo:** Proyecto individual (Examen Transversal - Desarrollo de Aplicaciones Móviles)  
 **Repositorio:** https://github.com/Ervin-PM/EVA2DA.git  
 **Fecha:** Diciembre 2025
 
@@ -13,9 +13,6 @@ Aplicación móvil con autenticación JWT, CRUD de tareas, gestión de imágenes
 
 Este proyecto fue desarrollado con el apoyo de **GitHub Copilot** como asistente de IA, utilizado para:
 
-- **Generación de código boilerplate:** Estructura inicial de componentes React Native y TypeScript
-- **Refactorización:** Migración de lógica de negocio a custom hooks siguiendo mejores prácticas
-- **Depuración:** Identificación y solución de errores en peticiones HTTP y manejo de estados
 - **Documentación:** Generación de comentarios y documentación técnica
 - **Optimización:** Implementación de manejo de imágenes con compresión y reintentos en peticiones de red
 
